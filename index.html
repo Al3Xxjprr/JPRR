@@ -1,0 +1,1487 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JPRR - Tienda Online</title>
+
+  <!-- Seguridad: Content Security Policy estricta -->
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://api.whatsapp.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://api.whatsapp.com; upgrade-insecure-requests;">
+
+  <!-- Prevenir clickjacking -->
+  <meta http-equiv="X-Frame-Options" content="DENY">
+
+  <!-- Prevenir MIME type sniffing -->
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+
+  <!-- Habilitar protección XSS del navegador -->
+  <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+
+  <!-- Control de referrer para privacidad -->
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+
+  <!-- Política de permisos restrictiva -->
+  <meta http-equiv="Permissions-Policy"
+    content="geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()">
+
+  <meta name="description" content="Tienda online JPRR - Compra fácil por WhatsApp con máxima seguridad">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Contenedor principal */
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    /* Buscador */
+    #search {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid #e5e5e5;
+      font-size: 15px;
+    }
+
+    /* Categorías */
+    .categories {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .cat-btn {
+      background: #ffffff;
+      border: 1px solid #e5e5e5;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #666;
+      transition: 0.2s;
+    }
+
+    .cat-btn:hover {
+      border-color: #25D366;
+      color: #25D366;
+    }
+
+    /* Categoría activa */
+    .cat-btn.active {
+      background: #25D366;
+      border-color: #25D366;
+      color: white;
+    }
+
+    :root {
+      --primary: #25D366;
+      --primary-dark: #128C7E;
+      --text: #1a1a1a;
+      --text-light: #666;
+      --border: #e5e5e5;
+      --bg: #ffffff;
+      --card-bg: #fafafa;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* Header */
+    header {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 20px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      color: white;
+      font-size: 18px;
+    }
+
+    .logo-text h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
+
+    .logo-text p {
+      font-size: 13px;
+      color: var(--text-light);
+    }
+
+    nav ul {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 15px;
+      transition: color 0.2s;
+    }
+
+    nav a:hover {
+      color: var(--primary);
+    }
+
+    /* Security Badge */
+    .security-badge {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: white;
+      border: 2px solid var(--primary);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+
+    /* Hero Section */
+    .hero {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 80px 30px;
+      text-align: center;
+    }
+
+    .hero h2 {
+      font-size: 56px;
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1.1;
+      margin-bottom: 20px;
+      letter-spacing: -1px;
+    }
+
+    .hero p {
+      font-size: 20px;
+      color: var(--text-light);
+      max-width: 700px;
+      margin: 0 auto 40px;
+    }
+
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--primary);
+      color: white;
+      padding: 16px 32px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 16px;
+      transition: all 0.3s;
+      border: none;
+      cursor: pointer;
+    }
+
+    .hero-cta:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
+    }
+
+    /* Products Section */
+    .products-section {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 60px 30px;
+    }
+
+    .section-header {
+      margin-bottom: 40px;
+    }
+
+    .section-header h3 {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .section-header p {
+      font-size: 16px;
+      color: var(--text-light);
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .product-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .product-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+      border-color: var(--primary);
+    }
+
+    .product-image {
+      height: 240px;
+      background: var(--card-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .product-info {
+      padding: 24px;
+    }
+
+    .product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      cursor: zoom-in;
+      transition: transform 0.28s ease;
+    }
+
+    /* Imagen horizontal (landscape) - mantén proporción dentro del contenedor */
+    .product-image img.landscape {
+      width: auto;
+      max-width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+    }
+
+    /* Clase para imágenes pequeñas dentro del card (evita que ocupen todo el contenedor) */
+    .product-image img.small {
+      width: auto;
+      max-width: 90%;
+      max-height: 200px;
+      height: auto;
+      object-fit: contain;
+      margin: 0 auto;
+      display: block;
+    }
+
+
+    .product-info {
+      padding: 24px;
+    }
+
+    .product-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .product-desc {
+      font-size: 14px;
+      color: var(--text-light);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .product-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .product-price {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .btn-wsp {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .btn-wsp:hover {
+      background: var(--primary-dark);
+      transform: scale(1.05);
+    }
+
+    .btn-wsp:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Footer */
+    footer {
+      background: #fafafa;
+      border-top: 1px solid var(--border);
+      padding: 40px 30px;
+      margin-top: 80px;
+    }
+
+    .footer-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .footer-info h4 {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .footer-info p {
+      color: var(--text-light);
+      font-size: 14px;
+    }
+
+    .footer-contact {
+      text-align: right;
+    }
+
+    .footer-contact a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 18px;
+    }
+
+    .footer-contact p {
+      color: var(--text-light);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      nav ul {
+        gap: 20px;
+      }
+
+      .hero h2 {
+        font-size: 36px;
+      }
+
+      .hero p {
+        font-size: 16px;
+      }
+
+      .products-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-content {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .footer-contact {
+        text-align: center;
+      }
+
+      .security-badge {
+        bottom: 10px;
+        right: 10px;
+        font-size: 11px;
+        padding: 8px 12px;
+      }
+    }
+
+    /* Collapsible descriptions */
+    .collapse-content {
+      max-height: 120px;
+      overflow: hidden;
+      transition: max-height 0.32s ease;
+    }
+
+    .collapse-content.expanded {
+      /* allow expansion to full content */
+      max-height: 2000px;
+    }
+
+    .toggle-more {
+      display: inline-block;
+      margin-top: 10px;
+      background: transparent;
+      border: none;
+      color: var(--primary);
+      font-weight: 700;
+      cursor: pointer;
+      padding: 6px 8px;
+      border-radius: 8px;
+    }
+
+    .toggle-more:hover {
+      text-decoration: underline;
+    }
+
+    /* Image modal */
+    .image-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 24px;
+    }
+
+    .image-modal.open {
+      display: flex;
+    }
+
+    .image-modal-content {
+      max-width: 1100px;
+      width: 100%;
+      max-height: 90vh;
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .image-modal img {
+      max-width: 100%;
+      max-height: 85vh;
+      border-radius: 8px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    .image-modal-close {
+      position: absolute;
+      top: 18px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      padding: 8px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .image-modal-caption {
+      color: white;
+      font-size: 14px;
+      max-width: 1100px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="header-content">
+      <div class="logo-area">
+        <div class="logo-icon">JPRR</div>
+        <div class="logo-text">
+          <h1>JPRR</h1>
+          <p>Tu tienda online</p>
+        </div>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="#productos">Productos</a></li>
+          <li><a href="#sobre">Sobre Nosotros</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h2>Compra fácil y rápido<br>por WhatsApp</h2>
+    <p>Descubre nuestros productos de calidad. Haz clic en cualquier artículo y te llevamos directo a WhatsApp para
+      completar tu compra de forma segura.</p>
+    <a href="https://api.whatsapp.com/send?phone=51954121178&text=Hola,%20quiero%20información%20sobre%20sus%20productos"
+      class="hero-cta">
+      💬 Contáctanos por WhatsApp
+    </a>
+  </section>
+
+  <section class="products-section" id="productos">
+    <div class="section-header">
+      <h3>Nuestros Productos</h3>
+      <p>Selecciona el producto que te interesa y compra directamente por WhatsApp</p>
+    </div>
+
+    <!-- Aviso de pedido mínimo -->
+    <div
+      style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px 16px; border-radius: 6px; margin-bottom: 18px; display: flex; align-items: center; gap: 10px;">
+      <span style="font-size: 18px;">⚠️</span>
+      <p style="margin: 0; font-size: 14px; color: #333; font-weight: 600;">Pedido mínimo para delivery a partir de:
+        <strong>S/ 25</strong></p>
+    </div>
+
+    <!-- Buscador -->
+    <div class="controls">
+      <input id="search" type="text" placeholder="Buscar producto..." aria-label="Buscar producto">
+
+      <!-- Categorías -->
+      <div class="categories" role="tablist" aria-label="Filtrar por categorías">
+        <button class="cat-btn active" data-filter="all">Todos</button>
+        <button class="cat-btn" data-filter="utensilios">Utensilios</button>
+        <button class="cat-btn" data-filter="vajilla">Vajilla</button>
+        <button class="cat-btn" data-filter="vasos">Vasos</button>
+        <button class="cat-btn" data-filter="cocina">Cocina</button>
+        <button class="cat-btn" data-filter="otros">Otros</button>
+      </div>
+    </div>
+
+    <!-- Grid donde van los productos -->
+    <div class="products-grid" id="products-grid">
+      <article class="product-card" data-name="Set de Utensilios FACUSA con Soporte" data-price="S/ 79"
+        data-category="utensilios">
+        <div class="product-image">
+          <img src="imagenes/ChatGPT%20Image%2020%20nov%202025%2C%2007_28_27%20p.m..png"
+            alt="Set de Utensilios FACUSA con Soporte">
+        </div>
+        <div class="product-info">
+          <h4 class="product-title">Set de Utensilios FACUSA con Soporte</h4>
+          <div class="collapse-content">
+            <p class="product-desc">Set de Utensilios FACUSA con Soporte
+              <br>Incluye utensilios esenciales de cocina, resistentes al calor y con mango ergonómico. Ideal para uso
+              diario. Viene con un soporte metálico para mantenerlos ordenados.
+            </p>
+            <p class="product-desc"><strong>Incluye:</strong></p>
+            <ul style="margin:6px 0 10px 18px;color:var(--text-light);font-size:14px;">
+              <li>1 Cucharón</li>
+              <li>1 Espátula ranurada</li>
+              <li>1 Cuchara de servir</li>
+              <li>1 Cuchara perforada</li>
+              <li>1 Espátula sólida</li>
+              <li>1 Soporte metálico colgante</li>
+            </ul>
+            <p class="product-desc"><strong>Características:</strong></p>
+            <ul style="margin:6px 0 0 18px;color:var(--text-light);font-size:14px;">
+              <li>✔ Material resistente y duradero</li>
+              <li>✔ Diseño moderno y ergonómico</li>
+              <li>✔ Fácil de limpiar</li>
+              <li>✔ Marca FACUSA – calidad desde 1956</li>
+              <li>✔ Ideal para todo tipo de cocina</li>
+            </ul>
+          </div>
+          <div class="product-footer" style="margin-top:12px;">
+            <span class="product-price">S/ 40</span>
+            <button class="btn-wsp" data-action="wsp">
+              💬 Comprar
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="product-card" data-name="Recipiente de Vidrio Loren’s con Tapa Hermética Roja"
+        data-category="cocina" data-price="Consultar">
+        <div class="product-image">
+          <img src="imagenes/foto2.png" alt="Recipiente de Vidrio Loren’s con Tapa Hermética Roja">
+        </div>
+        <div class="product-info">
+          <h4 class="product-title">Recipiente de Vidrio Loren’s con Tapa Hermética Roja</h4>
+          <div class="collapse-content">
+            <p class="product-desc">Organiza y conserva tus alimentos con este práctico recipiente de vidrio Loren’s,
+              perfecto para cocina, refrigerador o llevar comida. Está hecho de vidrio resistente y cuenta con una tapa
+              hermética de color rojo que evita derrames y mantiene la frescura.</p>
+            <p class="product-desc">El diseño exterior incluye un bonito detalle floral que lo hace atractivo y ideal
+              para cualquier hogar.</p>
+            <p class="product-desc"><strong>Características:</strong></p>
+            <ul style="margin:6px 0 10px 18px;color:var(--text-light);font-size:14px;">
+              <li>✔ Material: vidrio grueso y resistente</li>
+              <li>✔ Tapa hermética de plástico rojo</li>
+              <li>✔ Ideal para almacenar frutas, snacks, sopas, ensaladas y más</li>
+              <li>✔ Diseño floral decorativo</li>
+              <li>✔ Fácil de lavar y reutilizable</li>
+              <li>✔ No retiene olores</li>
+            </ul>
+            <p class="product-desc"><strong>Incluye:</strong></p>
+            <ul style="margin:6px 0 0 18px;color:var(--text-light);font-size:14px;">
+              <li>1 recipiente de vidrio con tapa (el que se muestra en la imagen)</li>
+            </ul>
+          </div>
+          <div class="product-footer" style="margin-top:12px;">
+            <span class="product-price">S/ 15</span>
+            <button class="btn-wsp" data-action="wsp">
+              💬 Comprar
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="product-card" data-name="Set de Bowls Loren's – 7 Piezas (Opal Glass resistente al calor)"
+        data-category="vajilla" data-price="Consultar">
+        <div class="product-image">
+          <img src="imagenes/foto3.png" alt="Set de Bowls Loren's – 7 Piezas (Opal Glass resistente al calor)">
+        </div>
+        <div class="product-info">
+          <h4 class="product-title">Set de Bowls Loren's – 7 Piezas (Opal Glass)</h4>
+          <div class="collapse-content">
+            <p class="product-desc">Elegante set de bowls de la marca Loren's, ideal para uso diario o para complementar
+              tu vajilla. El conjunto incluye 7 piezas en total:</p>
+            <ul style="margin:6px 0 10px 18px;color:var(--text-light);font-size:14px;">
+              <li>6 bowls de 4.5"</li>
+              <li>1 bowl grande de 8" (tipo sopero)</li>
+            </ul>
+            <p class="product-desc">Fabricados en vidrio opal resistente al calor, ligeros, duraderos y con un delicado
+              diseño floral que aporta un toque moderno y decorativo a tu mesa. Perfectos para sopas, cereales,
+              ensaladas, snacks y mucho más.</p>
+            <p class="product-desc"><strong>Características:</strong></p>
+            <ul style="margin:6px 0 0 18px;color:var(--text-light);font-size:14px;">
+              <li>✔ Material resistente al calor</li>
+              <li>✔ Diseño floral elegante</li>
+            </ul>
+          </div>
+          <div class="product-footer" style="margin-top:12px;">
+            <span class="product-price">S/ 30</span>
+            <button class="btn-wsp" data-action="wsp">
+              💬 Comprar
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="product-card" data-name="Set de Utensilios FACUSA" data-price="S/ 120" data-category="utensilios">
+        <div class="product-image">
+          <img src="imagenes/foto6.png" alt="Set de Utensilios FACUSA">
+        </div>
+        <div class="product-info">
+          <h4 class="product-title">Set de Utensilios FACUSA</h4>
+          <div class="collapse-content">
+            <p class="product-desc">🍳 Set de Utensilios FACUSA: Indispensables en tu Cocina 🍳
+              ¡Equipa tu cocina con calidad y estilo desde 1966! Descubre el set esencial de utensilios FACUSA, diseñado
+              para hacer tus tareas culinarias más fáciles y eficientes. La combinación perfecta de funcionalidad y
+              durabilidad.</p>
+            <p class="product-desc"><strong>Calidad Reconocida:</strong> Con la trayectoria de FACUSA Desde 1966,
+              sinónimo de confianza en la cocina.</p>
+            <p class="product-desc"><strong>Mango Ergonómico:</strong> Mangos de madera (o material similar) que ofrecen
+              un agarre cómodo y seguro.</p>
+            <p class="product-desc"><strong>Material Duradero:</strong> Fabricados con acero inoxidable (o material
+              principal) resistente para el uso diario.</p>
+            <p class="product-desc"><strong>Utensilios Básicos:</strong> Incluye los imprescindibles: espátula,
+              cucharón, espumadera, y más.</p>
+            <p class="product-desc"><strong>Organización Práctica:</strong> Viene con un soporte (o base) para mantener
+              todo ordenado y al alcance.</p>
+            <p class="product-desc">¡No dejes que nada te detenga en la cocina! Añade este set FACUSA a tu carrito y
+              cocina como un profesional.</p>
+          </div>
+          <div class="product-footer">
+            <span class="product-price">S/ 40</span>
+            <button class="btn-wsp" data-action="wsp">
+              💬 Comprar
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="product-card" data-name="Set de 6 Copas Nan-Ben Glass" data-price="Consultar"
+        data-category="vasos">
+        <div class="product-image">
+          <img src="imagenes/foto 4.png" alt="Set de 6 Copas Nan-Ben Glass">
+        </div>
+        <div class="product-info">
+          <h4 class="product-title">Set de 6 Copas de Cristal Nan-Ben Glass</h4>
+          <div class="collapse-content">
+            <p class="product-desc">🥂 Set de 6 Copas de Cristal Nan-Ben Glass: Toque de Elegancia 🥂
+              ¡Sofisticación y color para tus brindis! Este set de 6 copas de cristal de alta calidad combina diseño
+              exclusivo y durabilidad.</p>
+            <p class="product-desc"><strong>Estilo Vibrante:</strong> Cuentan con grabados en colores morado, fucsia y
+              naranja que destacan en cualquier mesa.</p>
+            <p class="product-desc"><strong>Cristal Premium:</strong> Alta transparencia, brillo y resistencia (HIGH
+              QUALITY GLASSWARE). Máxima Versatilidad: Perfectas para vino, cócteles, agua o cualquier bebida especial.
+            </p>
+            <p class="product-desc">¡Realza tus bebidas con un toque de distinción y color!</p>
+            <p class="product-desc"><strong>Características:</strong></p>
+            <ul style="margin:6px 0 0 18px;color:var(--text-light);font-size:14px;">
+              <li>✔ Cristal premium, alta transparencia y brillo</li>
+              <li>✔ Grabados en morado, fucsia y naranja</li>
+              <li>✔ Versátiles para vino, cócteles y bebidas</li>
+            </ul>
+          </div>
+          <div class="product-footer" style="margin-top:12px;">
+            <span class="product-price">S/ 40</span>
+            <button class="btn-wsp" data-action="wsp">
+              💬 Comprar
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="product-card" data-name="Set de 6 Vasos DIAMONDS" data-price="Consultar" data-category="vasos">
+        <div class="product-image">
+          <img src="imagenes/foto5.png" alt="Set de 6 Vasos DIAMONDS">
+        </div>
+        <div class="product-info">
+          <h4 class="product-title">Set de 6 Vasos DIAMONDS: Elegancia Británica</h4>
+          <div class="collapse-content">
+            <p class="product-desc">💎 Set de 6 Vasos DIAMONDS: Elegancia Británica 💎
+              ¡El toque de lujo que tu hogar necesita! Este set de 6 vasos de cristal premium destaca por su diseño
+              sofisticado con patrón de diamante en relieve, un clásico del estilo británico.</p>
+            <p class="product-desc"><strong>Cristal de Alta Calidad:</strong> Resistencia, brillo y transparencia
+              superiores.</p>
+            <p class="product-desc"><strong>Diseño Único:</strong> Patrón ergonómico que mejora el agarre y el estilo.
+            </p>
+            <p class="product-desc"><strong>Máxima Versatilidad:</strong> Perfectos para agua, jugos, cócteles o whisky.
+            </p>
+            <p class="product-desc"><strong>Regalo Perfecto:</strong> Presentación ideal en caja.</p>
+            <p class="product-desc">🛒 ¡Compra ya y eleva tu cristalería!</p>
+            <p class="product-desc"><strong>Características:</strong></p>
+            <ul style="margin:6px 0 0 18px;color:var(--text-light);font-size:14px;">
+              <li>✔ Cristal premium resistente y duradero</li>
+              <li>✔ Patrón de diamante en relieve (estilo británico)</li>
+              <li>✔ Diseño ergonómico con excelente agarre</li>
+              <li>✔ Versátil para cualquier bebida</li>
+              <li>✔ Presentación en caja ideal para regalo</li>
+            </ul>
+          </div>
+          <div class="product-footer" style="margin-top:12px;">
+            <span class="product-price">S/ 22</span>
+            <button class="btn-wsp" data-action="wsp">
+              💬 Comprar
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="product-card" data-name="Rallador" data-price="S/ 35" data-category="cocina">
+        <div class="product-image">
+          <img src="imagenes/foto8.png" alt="Rallador - Set de 2 Ralladores Manuales de Cerámica">
+        </div>
+        <div class="product-info">
+          <h4 class="product-title">Picador de Ajo</h4>
+          <div class="collapse-content">
+            <p class="product-desc">Picador de Ajo
+              Ralla sin Esfuerzo, Limpia sin Olor.
+              Simplifica la preparación de tus comidas con nuestro Set de 2 Ralladores Manuales de Cerámica. Perfectos
+              para obtener una pasta fina de especias, jengibre y otros ingredientes al instante.</p>
+            <p class="product-desc"><strong>Rallado Fino:</strong> Máxima liberación de sabor para tus aderezos y
+              salsas.</p>
+            <p class="product-desc"><strong>Fácil Limpieza:</strong> Superficie antiadherente que elimina restos y
+              olores rápidamente.</p>
+            <p class="product-desc"><strong>Material:</strong> Cerámica duradera, apta para lavavajillas.</p>
+            <p class="product-desc">¡La herramienta esencial para un toque gourmet en tu cocina!</p>
+          </div>
+          <div class="product-footer">
+            <span class="product-price">S/ 7</span>
+            <button class="btn-wsp" data-action="wsp">
+              💬 Comprar
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="product-card" data-name="Exprimidores" data-price="Consultar" data-category="cocina">
+        <div class="product-image">
+          <img src="imagenes/foto9.png" alt="Exprimidores - Set de exprimidores manuales">
+        </div>
+        <div class="product-info">
+          <h4 class="product-title">Exprimidores</h4>
+          <div class="collapse-content">
+            <p class="product-desc">🍋 Exprimidores
+              Prácticos exprimidores manuales ideales para preparar jugos de limón, naranja pequeña o cualquier cítrico
+              de forma rápida y sin esfuerzo. Están hechos de plástico resistente, ligeros y fáciles de lavar.</p>
+            <p class="product-desc">Perfectos para cocina, negocios de comida, cevicherías o uso diario en el hogar.</p>
+            <p class="product-desc"><strong>Características:</strong></p>
+            <ul style="margin:6px 0 0 18px;color:var(--text-light);font-size:14px;">
+              <li>✔ Material: plástico duro y resistente</li>
+              <li>✔ Diseño de palanca para mejor presión</li>
+              <li>✔ Incluye colador integrado</li>
+              <li>✔ Fácil de usar y limpiar</li>
+              <li>✔ Ideales para jugos, aderezos y marinados</li>
+            </ul>
+          </div>
+          <div class="product-footer">
+            <span class="product-price">S/ 7</span>
+            <button class="btn-wsp" data-action="wsp">
+              💬 Comprar
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="product-card" data-name="Set de 6 Vasos de Vidrio XK-012" data-price="Consultar"
+        data-category="vasos">
+        <div class="product-image">
+          <img src="imagenes/foto15.png" alt="Set de 6 Vasos de Vidrio XK-012">
+        </div>
+        <div class="product-info">
+          <h4 class="product-title">Set de 6 Vasos de Vidrio XK-012</h4>
+          <div class="collapse-content">
+            <p class="product-desc">Elegante set de 6 vasos de vidrio de 358 ml (12 oz), modelo XK-012. Cada vaso está
+              fabricado en vidrio resistente con un diseño tallado que aporta un toque sofisticado a tu mesa. Ideal para
+              agua, jugos, bebidas frías y uso diario en el hogar o negocio.</p>
+            <p class="product-desc"><strong>Características:</strong></p>
+            <ul style="margin:6px 0 0 18px;color:var(--text-light);font-size:14px;">
+              <li>✔ Set de 6 vasos</li>
+              <li>✔ Capacidad: 358 ml (12 oz)</li>
+              <li>✔ Material: vidrio resistente</li>
+              <li>✔ Diseño tallado elegante</li>
+              <li>✔ Ideal para agua, jugos y bebidas frías</li>
+              <li>✔ Perfecto para hogar o negocio</li>
+            </ul>
+            <p class="product-desc">Si deseas ver más modelos disponibles, escríbeme al WhatsApp y te envío catálogo
+              completo.</p>
+          </div>
+          <div class="product-footer">
+            <span class="product-price">S/ 14</span>
+            <button class="btn-wsp" data-action="wsp">
+              💬 Comprar
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="product-card" data-name="Juego de vasos Lonvilish" data-price="Consultar" data-category="vasos">
+        <div class="product-image">
+          <img src="imagenes/foto17.png" alt="Juego de vasos Lonvilish – Set 6 vasos 300 ml">
+        </div>
+        <div class="product-info">
+          <h4 class="product-title">Juego de vasos Lonvilish</h4>
+          <div class="collapse-content">
+            <p class="product-desc">Juego de vasos Lonvilish de vidrio texturizado, ideal para agua, refrescos o jugos.
+              Incluye 6 vasos de 300 ml, fabricados con vidrio resistente y diseño elegante con relieve tipo burbuja.
+              Perfectos para el hogar, negocios o como regalo.</p>
+            <p class="product-desc"><strong>Características:</strong></p>
+            <ul style="margin:6px 0 0 18px;color:var(--text-light);font-size:14px;">
+              <li>✔️ Vidrio grueso y durable</li>
+              <li>✔️ Diseño moderno y decorativo</li>
+              <li>✔️ Caja original – producto nuevo</li>
+            </ul>
+            <p class="product-desc">Si deseas ver más modelos disponibles, escríbeme al WhatsApp y te envío catálogo
+              completo.</p>
+          </div>
+          <div class="product-footer">
+            <span class="product-price">S/ 18</span>
+            <button class="btn-wsp" data-action="wsp">
+              💬 Comprar
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="product-card" data-name="Tabla de Picar Doble Cara" data-price="S/ 35" data-category="cocina">
+        <div class="product-image">
+          <img src="imagenes/foto13.png" alt="Tabla de Picar Doble Cara – Modelos Variados" class="landscape">
+        </div>
+        <div class="product-info">
+          <h4 class="product-title">Tabla de Picar Doble Cara</h4>
+          <div class="collapse-content">
+            <p class="product-desc">Práctica y resistente tabla de picar de doble cara, perfecta para todo tipo de
+              cocina. Fabricada en material duradero y fácil de limpiar, cuenta con borde antiderrapante y un práctico
+              mango para colgar.</p>
+            <p class="product-desc"><strong>Características:</strong></p>
+            <ul style="margin:6px 0 0 18px;color:var(--text-light);font-size:14px;">
+              <li>✔️ Material resistente y fácil de lavar</li>
+              <li>✔️ Borde verde antideslizante</li>
+              <li>✔️ Mango ergonómico</li>
+              <li>✔️ Doble cara para mayor practicidad</li>
+              <li>✔️ Disponible en varios diseños</li>
+            </ul>
+            <p class="product-desc">Si deseas ver más modelos o colores, escríbeme al WhatsApp y te envío todas las
+              opciones disponibles.</p>
+          </div>
+          <div class="product-footer">
+            <span class="product-price">S/ 10</span>
+            <button class="btn-wsp" data-action="wsp">
+              💬 Comprar
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="product-card" data-name="Jarra de Vidrio Pasabahçe Luna" data-price="Consultar"
+        data-category="vasos">
+        <div class="product-image">
+          <img src="imagenes/foto14.png" alt="Jarra de Vidrio Pasabahçe Luna" class="small">
+        </div>
+        <div class="product-info">
+          <h4 class="product-title">Jarra de Vidrio Pasabahçe Luna</h4>
+          <div class="collapse-content">
+            <p class="product-desc">Jarra de vidrio Pasabahçe Luna de excelente calidad, ideal para agua, jugos y
+              refrescos. Cuenta con una tapa práctica que evita derrames y un diseño elegante que combina con cualquier
+              cocina. Perfecta para uso diario o para reuniones en casa.</p>
+            <p class="product-desc"><strong>Características:</strong></p>
+            <ul style="margin:6px 0 0 18px;color:var(--text-light);font-size:14px;">
+              <li>✔️ Material: vidrio de excelente calidad</li>
+              <li>✔️ Tapa práctica que evita derrames</li>
+              <li>✔️ Diseño elegante Pasabahçe Luna</li>
+              <li>✔️ Ideal para agua, jugos y refrescos</li>
+              <li>✔️ Perfecta para uso diario o reuniones</li>
+            </ul>
+          </div>
+          <div class="product-footer">
+            <span class="product-price">S/ 22</span>
+            <button class="btn-wsp" data-action="wsp">
+              💬 Comprar
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="product-card" data-name="Set de 6 Bowls LONVILISH" data-price="Consultar" data-category="vajilla">
+        <div class="product-image">
+          <img src="imagenes/foto11.png" alt="Set de 6 Bowls LONVILISH">
+        </div>
+        <div class="product-info">
+          <h4 class="product-title">Set de 6 Bowls LONVILISH</h4>
+          <div class="collapse-content">
+            <p class="product-desc">Este es un set de 6 bowls de vidrio de la marca LONVILISH. Cada bowl tiene un diseño
+              con textura de puntos y viene en colores variados (morado, verde, azul, turquesa y rojo). El empaque
+              muestra que el set incluye 6 piezas y está orientado a ser un juego de tazones para servir alimentos.</p>
+            <p class="product-desc"><strong>Características:</strong></p>
+            <ul style="margin:6px 0 0 18px;color:var(--text-light);font-size:14px;">
+              <li>✔ Material: vidrio de calidad</li>
+              <li>✔ Diseño con textura de puntos</li>
+              <li>✔ Colores variados (morado, verde, azul, turquesa, rojo)</li>
+              <li>✔ Set de 6 piezas</li>
+              <li>✔ Ideales para servir alimentos</li>
+            </ul>
+          </div>
+          <div class="product-footer">
+            <span class="product-price">S/ 19</span>
+            <button class="btn-wsp" data-action="wsp">
+              💬 Comprar
+            </button>
+          </div>
+        </div>
+      </article>
+      <article class="product-card" data-name="Set de 6 Vasos YingLi Glass" data-price="Consultar"
+        data-category="vasos">
+        <div class="product-image">
+          <img src="imagenes/foto12.png" alt="Set de 6 Vasos YingLi Glass – Diseño Floral Elegante">
+        </div>
+        <div class="product-info">
+          <h4 class="product-title">Set de 6 Vasos YingLi Glass – Diseño Floral</h4>
+          <div class="collapse-content">
+            <p class="product-desc">Set de 6 Vasos YingLi Glass – Diseño Floral Elegante
+              Renueva tu mesa con este hermoso set de 6 vasos de vidrio marca YingLi Glass, presentados en una caja
+              decorativa ideal para regalo. Cada vaso viene con un diseño floral en tonos dorados y detalles verdes que
+              le dan un toque clásico y elegante.</p>
+            <p class="product-desc"><strong>Características:</strong></p>
+            <ul style="margin:6px 0 0 18px;color:var(--text-light);font-size:14px;">
+              <li>✔️ Incluye 6 vasos</li>
+              <li>✔️ Material: vidrio resistente</li>
+              <li>✔️ Diseño floral con detalles en dorado</li>
+              <li>✔️ Presentación en caja elegante, perfecto para obsequios</li>
+              <li>✔️ Ideal para agua, jugos y bebidas frías</li>
+            </ul>
+            <p class="product-desc">Perfectos para el hogar, mesas familiares o como regalo especial.</p>
+          </div>
+          <div class="product-footer">
+            <span class="product-price">S/ 20</span>
+            <button class="btn-wsp" data-action="wsp">
+              💬 Comprar
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="product-card" data-name="Bombonera de Cristal Tallado" data-price="Consultar"
+        data-category="otros">
+        <div class="product-image">
+          <img src="imagenes/foto16.png" alt="Bombonera de Cristal Tallado">
+        </div>
+        <div class="product-info">
+          <h4 class="product-title">Bombonera de Cristal Tallado</h4>
+          <div class="collapse-content">
+            <p class="product-desc">Añade un toque de lujo a tu mesa con esta hermosa Bombonera de Cristal Tallado.
+              Perfecta para presentar tus dulces, chocolates o pequeños aperitivos con elegancia atemporal. Su diseño
+              detallado y su material de alta calidad la convierten en la pieza central ideal para cualquier celebración
+              o simplemente para decorar tu hogar.</p>
+            <p class="product-desc"><strong>Características:</strong></p>
+            <ul style="margin:6px 0 0 18px;color:var(--text-light);font-size:14px;">
+              <li>✔ Material: cristal de alta calidad</li>
+              <li>✔ Diseño tallado detallado y elegante</li>
+              <li>✔ Perfecta para dulces, chocolates y aperitivos</li>
+              <li>✔ Ideal para decoración y presentación</li>
+              <li>✔ Se entrega en caja de presentación vibrante</li>
+              <li>✔ Lista para regalar o uso personal</li>
+            </ul>
+            <p class="product-desc">La combinación perfecta de funcionalidad y estilo para embellecer tu espacio.</p>
+          </div>
+          <div class="product-footer">
+            <span class="product-price">S/ 15</span>
+            <button class="btn-wsp" data-action="wsp">
+              💬 Comprar
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="product-card" data-name="Set de Tazas con Platillos – 12 piezas" data-price="Consultar"
+        data-category="vajilla">
+        <div class="product-image">
+          <img src="imagenes/foto18.png" alt="Set de Tazas con Platillos – 12 piezas">
+        </div>
+        <div class="product-info">
+          <h4 class="product-title">Set de Tazas con Platillos – 12 piezas</h4>
+          <div class="collapse-content">
+            <p class="product-desc">Elegante y moderno set de tazas con sus respectivos platillos, perfecto para
+              acompañar tus desayunos, reuniones o para darle un toque especial a tu cocina. Viene en una caja
+              resistente y lista para regalo. Ideal para uso diario, decoración o para sorprender a alguien especial.
+            </p>
+            <p class="product-desc">Si deseas ver más modelos disponibles, escríbeme al WhatsApp y te envío catálogo
+              completo.</p>
+          </div>
+          <div class="product-footer">
+            <span class="product-price">S/ 25</span>
+            <button class="btn-wsp" data-action="wsp">
+              💬 Comprar
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="product-card" data-name="Filtro Multi-Splash para Grifo – Modelo HY-022" data-price="Consultar"
+        data-category="cocina">
+        <div class="product-image">
+          <img src="imagenes/foto10.png" alt="Filtro Multi-Splash HY-022" class="small">
+        </div>
+        <div class="product-info">
+          <h4 class="product-title">Filtro Multi-Splash para Grifo – Modelo HY-022</h4>
+          <div class="collapse-content">
+            <p class="product-desc">Haz más eficiente tu consumo de agua con este práctico adaptador para caño. Su
+              diseño multi-salida ayuda a reducir salpicaduras, mejorar la presión y ahorrar agua. Es fácil de instalar,
+              compatible con la mayoría de grifos y viene en colores variados (rosado, celeste y verde). Ideal para
+              cocinas y baños.</p>
+            <p class="product-desc">Incluye modo de salida ajustable y sistema de filtro básico para un flujo más suave
+              y controlado.</p>
+            <p class="product-desc">Si deseas ver más modelos disponibles, escríbeme al WhatsApp y te envío catálogo
+              completo.</p>
+          </div>
+          <div class="product-footer">
+            <span class="product-price">S/ 9</span>
+            <button class="btn-wsp" data-action="wsp">
+              💬 Comprar
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="product-card" data-name="Estante Sailboat Toilet Rack" data-price="Consultar"
+        data-category="otros">
+        <div class="product-image">
+          <img src="imagenes/foto19.png" alt="Estante Sailboat Toilet Rack" class="small">
+        </div>
+        <div class="product-info">
+          <h4 class="product-title">Estante Sailboat Toilet Rack</h4>
+          <div class="collapse-content">
+            <p class="product-desc">Organiza tu baño de forma práctica y elegante con este estante Sailboat Toilet Rack.
+              Su diseño moderno en forma curva ofrece varios niveles de almacenamiento ideales para toallas, productos
+              de higiene, papel higiénico y accesorios. Fabricado con materiales resistentes y duraderos, es perfecto
+              para aprovechar el espacio vertical sin necesidad de perforar la pared. Ideal para baños pequeños o para
+              quienes desean mantener todo ordenado y al alcance.</p>
+            <p class="product-desc">Si deseas ver más modelos disponibles, escríbeme al WhatsApp y te envío catálogo
+              completo.</p>
+          </div>
+          <div class="product-footer">
+            <span class="product-price">S/ 38</span>
+            <button class="btn-wsp" data-action="wsp">
+              💬 Comprar
+            </button>
+          </div>
+        </div>
+      </article>
+      <article class="product-card" data-name="Modelos Variados (venta por unidad)" data-price="Consultar"
+        data-category="otros">
+        <div class="product-image">
+          <img src="imagenes/foto21.png" alt="Modelos Variados - venta por unidad" class="small">
+        </div>
+        <div class="product-info">
+          <h4 class="product-title">Modelos Variados (venta por unidad)</h4>
+          <div class="collapse-content">
+            <p class="product-desc">Este artículo se vende por unidad, no incluye los tres modelos juntos. Cada producto
+              se comercializa de manera separada, permitiendo elegir el diseño específico que desees. Las imágenes
+              muestran las diferentes opciones disponibles únicamente como referencia.</p>
+            <p class="product-desc">Si deseas ver más modelos disponibles, escríbeme al WhatsApp y te envío catálogo
+              completo.</p>
+          </div>
+          <div class="product-footer">
+            <span class="product-price">S/ 7</span>
+            <button class="btn-wsp" data-action="wsp">
+              💬 Comprar
+            </button>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="products-section" id="sobre">
+    <div class="section-header">
+      <h3>Sobre Nosotros</h3>
+      <p>Somos una tienda dedicada a ofrecer productos de calidad con atención personalizada por WhatsApp. Tu seguridad
+        y satisfacción son nuestra prioridad.</p>
+    </div>
+  </section>
+
+  <footer id="contacto">
+    <div class="footer-content">
+      <div class="footer-info">
+        <h4>JPRR</h4>
+        <p></p>
+        <p>Lima, Perú</p>
+        <p style="margin-top: 12px; font-size: 12px;">🔒 Sitio protegido con medidas de seguridad avanzadas</p>
+      </div>
+      <div class="footer-contact">
+        <a href="https://api.whatsapp.com/send?phone=51954121178">+51 954 121 178</a>
+        <p>© JPRR 2025 - Todos los derechos reservados</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Badge de seguridad -->
+  <div class="security-badge">
+    🔒 Sitio Seguro
+  </div>
+
+  <!-- Image modal para ampliar imágenes de producto -->
+  <div id="image-modal" class="image-modal" aria-hidden="true">
+    <div class="image-modal-content" role="dialog" aria-modal="true">
+      <button id="image-modal-close" class="image-modal-close" aria-label="Cerrar imagen">✕</button>
+      <img id="image-modal-img" src="" alt="">
+      <p id="image-modal-caption" class="image-modal-caption"></p>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var BUSINESS_PHONE = '51954121178';
+
+      // Función para sanitizar texto y prevenir XSS
+      function sanitizeText(text) {
+        var div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      // Validar que el número de teléfono sea seguro
+      function isValidPhone(phone) {
+        return /^[0-9]{10,15}$/.test(phone);
+      }
+
+      function getProductInfo(card) {
+        var name = String(card.dataset.name || '').trim();
+        var price = String(card.dataset.price || '').trim();
+
+        // Sanitizar datos
+        name = sanitizeText(name);
+        price = sanitizeText(price);
+
+        // Validar longitud máxima
+        if (name.length > 100) name = name.substring(0, 100);
+        if (price.length > 20) price = price.substring(0, 20);
+
+        return { name: name, price: price };
+      }
+
+      function buildWhatsAppLink(phoneNumber, message) {
+        // Validar número de teléfono
+        if (!isValidPhone(phoneNumber)) {
+          console.error('Número de teléfono inválido');
+          return null;
+        }
+
+        var base = 'https://api.whatsapp.com/send';
+        var params = new URLSearchParams({
+          phone: phoneNumber,
+          text: message
+        });
+        return base + '?' + params.toString();
+      }
+
+      // Rate limiting simple para prevenir spam
+      var lastClickTime = 0;
+      var CLICK_DELAY = 1000; // 1 segundo entre clicks
+
+      document.addEventListener('click', function (e) {
+        var btn = e.target.closest('button[data-action]');
+        if (!btn) return;
+
+        // Prevenir clicks múltiples rápidos
+        var now = Date.now();
+        if (now - lastClickTime < CLICK_DELAY) {
+          e.preventDefault();
+          return;
+        }
+        lastClickTime = now;
+
+        // Deshabilitar botón temporalmente
+        btn.disabled = true;
+        setTimeout(function () { btn.disabled = false; }, CLICK_DELAY);
+
+        var card = btn.closest('.product-card');
+        if (!card) return;
+
+        var info = getProductInfo(card);
+
+        if (btn.dataset.action === 'wsp') {
+          // Crear mensaje personalizado con información del producto
+          var mensaje = 'Hola! 👋%0A%0A' +
+            'Estoy interesado en comprar:%0A%0A' +
+            '📦 *Producto:* ' + encodeURIComponent(info.name) + '%0A' +
+            '💰 *Precio:* ' + encodeURIComponent(info.price) + '%0A%0A' +
+            '⚠️ *Pedido mínimo para delivery:* S/ 25%0A%0A' +
+            '¿Está disponible? Me gustaría más información.';
+
+          var url = 'https://api.whatsapp.com/send?phone=' + BUSINESS_PHONE + '&text=' + mensaje;
+
+          // Abrir WhatsApp con el mensaje pre-llenado
+          window.open(url, '_blank', 'noopener,noreferrer');
+        }
+      }, false);
+
+      // Prevenir inyección de scripts en tiempo de ejecución
+      if (typeof Object.freeze === 'function') {
+        Object.freeze(window.location);
+        Object.freeze(document.location);
+      }
+
+      // Detectar y prevenir manipulación del DOM
+      var observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+          if (mutation.type === 'childList') {
+            mutation.addedNodes.forEach(function (node) {
+              if (node.nodeName === 'SCRIPT') {
+                console.warn('Script injection attempt detected');
+                node.remove();
+              }
+            });
+          }
+        });
+      });
+
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+
+      // Limpiar event listeners al descargar la página
+      window.addEventListener('beforeunload', function () {
+        observer.disconnect();
+      });
+
+      // Log de inicialización segura
+      console.log('JPRR Store - Sistema de seguridad activo ✓');
+
+      // --------- Collapsible 'Ver más' para descripciones largas ---------
+      function initCollapsibles() {
+        var COLLAPSE_HEIGHT = 120; // px
+        var collapseItems = document.querySelectorAll('.collapse-content');
+        collapseItems.forEach(function (collapse) {
+          // Si el contenido no supera la altura, no añadimos el botón
+          if (collapse.scrollHeight <= COLLAPSE_HEIGHT) return;
+
+          // Asegurar la altura inicial
+          collapse.style.maxHeight = COLLAPSE_HEIGHT + 'px';
+
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'toggle-more';
+          btn.setAttribute('aria-expanded', 'false');
+          btn.textContent = 'Ver más';
+
+          btn.addEventListener('click', function () {
+            var expanded = collapse.classList.toggle('expanded');
+            if (expanded) {
+              collapse.style.maxHeight = collapse.scrollHeight + 'px';
+              btn.textContent = 'Ver menos';
+              btn.setAttribute('aria-expanded', 'true');
+            } else {
+              collapse.style.maxHeight = COLLAPSE_HEIGHT + 'px';
+              btn.textContent = 'Ver más';
+              btn.setAttribute('aria-expanded', 'false');
+            }
+          }, false);
+
+          // Insertar el botón justo antes del footer del producto
+          var card = collapse.closest('.product-card');
+          var footer = card ? card.querySelector('.product-footer') : null;
+          if (footer) footer.parentNode.insertBefore(btn, footer);
+          else collapse.parentNode.appendChild(btn);
+        });
+      }
+
+      // Ejecutar después de carga completa del DOM (el script está al final, por lo que ya debe estar disponible)
+      try { initCollapsibles(); } catch (e) { console.warn('Error inicializando collapsibles', e); }
+
+      // --------- Image modal (ampliar imagen al hacer click) ---------
+      function initImageModal() {
+        var modal = document.getElementById('image-modal');
+        var modalImg = document.getElementById('image-modal-img');
+        var modalCaption = document.getElementById('image-modal-caption');
+        var closeBtn = document.getElementById('image-modal-close');
+        if (!modal || !modalImg) return;
+
+        function openModal(src, alt) {
+          modal.classList.add('open');
+          modal.setAttribute('aria-hidden', 'false');
+          modalImg.src = src;
+          modalImg.alt = alt || '';
+          modalCaption.textContent = alt || '';
+          document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+          modal.classList.remove('open');
+          modal.setAttribute('aria-hidden', 'true');
+          modalImg.src = '';
+          modalCaption.textContent = '';
+          document.body.style.overflow = '';
+        }
+
+        // Abrir al hacer click en cualquier imagen de producto
+        document.querySelectorAll('.product-image img').forEach(function (img) {
+          img.style.cursor = 'zoom-in';
+          img.addEventListener('click', function (e) {
+            // usar la misma imagen (no data-uri) — si la ruta es local, funcionará
+            openModal(img.src, img.alt || img.getAttribute('data-caption') || '');
+          }, false);
+        });
+
+        // Cerrar al hacer click en overlay o en botón
+        modal.addEventListener('click', function (e) {
+          if (e.target === modal || e.target === closeBtn) closeModal();
+        });
+
+        // Cerrar con Escape
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+        });
+      }
+
+      try { initImageModal(); } catch (e) { console.warn('Error inicializando image modal', e); }
+
+      /* --- BUSCADOR DE PRODUCTOS --- */
+      (function initSearch() {
+        var input = document.getElementById('search');
+        if (!input) return;
+
+        input.addEventListener('input', function () {
+          var q = this.value.trim().toLowerCase();
+
+          document.querySelectorAll('.product-card').forEach(function (card) {
+            var name = (card.dataset.name || "").toLowerCase();
+            var price = (card.dataset.price || "").toLowerCase();
+
+            var match =
+              name.includes(q) ||
+              price.includes(q);
+
+            card.style.display = match || q === "" ? "" : "none";
+          });
+        });
+      })();
+
+      /* --- FILTRO POR CATEGORÍAS --- */
+      (function initFilters() {
+        var buttons = document.querySelectorAll('.cat-btn');
+
+        buttons.forEach(function (btn) {
+          btn.addEventListener('click', function () {
+
+            // activar botón
+            buttons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+
+            var filter = this.dataset.filter;
+
+            document.querySelectorAll('.product-card').forEach(function (card) {
+              var category = card.dataset.category;
+
+              if (filter === "all" || category === filter) {
+                card.style.display = "";
+              } else {
+                card.style.display = "none";
+              }
+            });
+
+            // borrar búsqueda al cambiar categoría (opcional)
+            document.getElementById("search").value = "";
+          });
+        });
+      })();
+
+    })();
+  </script>
+</body>
+
+</html
